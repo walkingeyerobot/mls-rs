@@ -48,12 +48,18 @@ impl From<u64> for MlsTime {
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
 #[wasm_bindgen(inline_js = r#"
 export function date_now() {
   return Date.now();
 }"#)]
 extern "C" {
+    fn date_now() -> f64;
+}
+
+#[cfg(all(target_arch = "wasm32", target_os = "emscripten"))]
+extern "C" {
+    #[link_name = "emscripten_date_now"]
     fn date_now() -> f64;
 }
 
